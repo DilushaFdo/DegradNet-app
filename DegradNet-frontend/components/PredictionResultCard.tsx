@@ -1,0 +1,73 @@
+'use client';
+
+import { Card, CardContent } from '@/components/ui/card';
+import { PredictionResult } from '@/types';
+import ConfidenceBar from './ConfidenceBar';
+import SeverityBar from './SeverityBar';
+import ImageMaskCanvas from './ImageMaskCanvas';
+import { CheckCircle, Box } from 'lucide-react';
+
+interface PredictionResultCardProps {
+  result: PredictionResult;
+  imagePreview: string;
+  threshold?: number;
+}
+
+export default function PredictionResultCard({
+  result,
+  imagePreview,
+  threshold,
+}: PredictionResultCardProps) {
+  return (
+    <div className="space-y-4">
+      {/* Detection Summary Card */}
+      <Card className="border-border/50">
+        <CardContent className="p-5 space-y-5">
+          {/* Status Badge */}
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
+              <CheckCircle className="w-3 h-3" />
+              Analysis Complete
+            </span>
+          </div>
+
+          {/* Material Type */}
+          <div className="p-4 rounded-lg bg-secondary/40 border border-border/30">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 border border-primary/20">
+                <Box className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">
+                  Detected Material
+                </p>
+                <p className="text-2xl font-bold text-foreground capitalize tracking-tight">
+                  {result.material}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <ConfidenceBar confidence={result.confidence} />
+            <SeverityBar severity={result.severity} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Visual Analysis Card */}
+      <Card className="border-border/50">
+        <CardContent className="p-5">
+          <ImageMaskCanvas
+            imageUrl={result.preprocessedImage}
+            maskUrl={result.binary}
+            heatmapUrl={result.mask}
+            severity={result.severity}
+            threshold={threshold}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

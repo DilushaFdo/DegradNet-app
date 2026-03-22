@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
       material: data.material,
       confidence: data.confidence,
       severity: data.severity,
+      rawMask: data.raw_mask ? `data:image/png;base64,${data.raw_mask}` : undefined,
       mask: `data:image/png;base64,${data.mask}`,
+      surfaceData: data.surface_data,
       binary: `data:image/png;base64,${data.binary}`,
       preprocessedImage: `data:image/png;base64,${data.preprocessed_image}`,
     });

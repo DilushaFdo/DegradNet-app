@@ -18,11 +18,11 @@ class AppConfig:
     DEFAULT_CLASS_MAP = {0: "concrete", 1: "metal", 2: "wood"}
 
     # Model file paths
-    CLASSIFIER_PATH = os.path.join(MODELS_DIR, "material_classifier_v2.pth")
+    CLASSIFIER_PATH = os.path.join(MODELS_DIR, "best_material_classifierVersion3.pth")
     SEGMENTATION_PATHS = {
         "concrete": os.path.join(MODELS_DIR, "best_concrete_model.pth"),
-        "metal": os.path.join(MODELS_DIR, "metal_best_model.pth"),
-        "wood": os.path.join(MODELS_DIR, "wood_real_world_best_v2.pth"),
+        "metal": os.path.join(MODELS_DIR, "best_metal_model_version3.pth"),
+        "wood": os.path.join(MODELS_DIR, "wood_real_world_best_version3.pth"),
     }
 
     # Prediction defaults

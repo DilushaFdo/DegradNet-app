@@ -37,7 +37,9 @@ async def predict(
 
     result = prediction_service.predict(img, threshold, material_override=material_override)
 
-    mask_b64 = ImageUtilsService.mask_to_base64(result["mask"])
+    mask_b64 = ImageUtilsService.mask_to_base64(result["mask"], img)
+    raw_mask_b64 = ImageUtilsService.probability_mask_to_base64(result["mask"])
+    surface_data = ImageUtilsService.mask_to_surface_data(result["mask"])
     binary_b64 = ImageUtilsService.binary_mask_to_base64(result["binary"])
 
     # Return the original full-resolution image (mask is already full-res from tiling)
@@ -47,7 +49,9 @@ async def predict(
         "material": result["material"],
         "confidence": result["confidence"],
         "severity": result["severity"],
+        "raw_mask": raw_mask_b64,
         "mask": mask_b64,
+        "surface_data": surface_data,
         "binary": binary_b64,
         "preprocessed_image": preprocessed_b64,
     })

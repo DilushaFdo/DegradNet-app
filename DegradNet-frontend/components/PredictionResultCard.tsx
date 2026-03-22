@@ -7,6 +7,10 @@ import SeverityBar from './SeverityBar';
 import ImageMaskCanvas from './ImageMaskCanvas';
 import { CheckCircle, Box } from 'lucide-react';
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import TopographicMap from './TopographicMap';
+import InteractiveXRayCanvas from './InteractiveXRayCanvas';
+
 interface PredictionResultCardProps {
   result: PredictionResult;
   imagePreview: string;
@@ -16,7 +20,7 @@ interface PredictionResultCardProps {
 export default function PredictionResultCard({
   result,
   imagePreview,
-  threshold,
+  threshold = 0.5,
 }: PredictionResultCardProps) {
   return (
     <div className="space-y-4">
@@ -59,13 +63,40 @@ export default function PredictionResultCard({
       {/* Visual Analysis Card */}
       <Card className="border-border/50">
         <CardContent className="p-5">
-          <ImageMaskCanvas
-            imageUrl={result.preprocessedImage}
-            maskUrl={result.binary}
-            heatmapUrl={result.mask}
-            severity={result.severity}
-            threshold={threshold}
-          />
+          <Tabs defaultValue="2d" className="w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-foreground/80">Analysis Visualization</h3>
+              <TabsList className="bg-secondary/50">
+                <TabsTrigger value="2d" className="text-xs">2D X-Ray Overlay</TabsTrigger>
+                <TabsTrigger value="3d" className="text-xs focus:outline-none">3D Topographic</TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <TabsContent value="2d" className="mt-0 outline-none">
+              {result.rawMask ? (
+                <InteractiveXRayCanvas
+                  imageUrl={result.preprocessedImage}
+                  rawMaskUrl={result.rawMask}
+                  threshold={threshold}
+                />
+              ) : (
+                <ImageMaskCanvas
+                  imageUrl={result.preprocessedImage}
+                  maskUrl={result.binary}
+                  heatmapUrl={result.mask}
+                  severity={result.severity}
+                  threshold={threshold}
+                />
+              )}
+              <p className="text-[11px] text-muted-foreground/60 mt-3 pl-1">
+                Real-time interactive X-Ray view. Drag the Detection Threshold slider to explore structural degradation instantly.
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="3d" className="mt-0 outline-none">
+              <TopographicMap surfaceData={result.surfaceData || []} height={400} />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

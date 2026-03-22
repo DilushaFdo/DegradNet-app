@@ -2,7 +2,9 @@ export interface PredictionResult {
   material: string;
   confidence: number;
   severity: number;
+  rawMask?: string;
   mask: string;
+  surfaceData?: number[][];
   binary: string;
   preprocessedImage: string;
 }

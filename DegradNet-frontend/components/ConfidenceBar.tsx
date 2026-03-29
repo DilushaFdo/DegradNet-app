@@ -19,7 +19,7 @@ export default function ConfidenceBar({ confidence }: ConfidenceBarProps) {
       </div>
       <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
         <div
-          className="h-full bg-primary transition-all duration-700 ease-out rounded-full"
+          className="h-full bg-accent transition-all duration-700 ease-out rounded-full"
           style={{ width: `${percentage}%` }}
         />
       </div>

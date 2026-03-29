@@ -13,6 +13,8 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'caution-stripe':
+          'repeating-linear-gradient(-45deg, hsl(48 96% 53% / 0.15), hsl(48 96% 53% / 0.15) 8px, transparent 8px, transparent 16px)',
       },
       borderRadius: {
         lg: 'var(--radius)',

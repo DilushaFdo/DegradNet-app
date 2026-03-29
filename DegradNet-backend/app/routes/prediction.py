@@ -1,4 +1,4 @@
-"""API routes for degradation prediction and health check."""
+"""Routes for prediction and health check."""
 
 from io import BytesIO
 
@@ -18,18 +18,7 @@ async def predict(
     threshold: float = 0.5,
     material_override: str = "auto",
 ):
-    """Accept an image upload and return material classification + degradation analysis.
-
-    Args:
-        request: FastAPI request (used to access app-level services).
-        file: Uploaded image file.
-        threshold: Binarization threshold for the segmentation mask (default 0.5).
-        material_override: If not "auto", bypass AI classification and use this
-                           material type directly. Options: auto, concrete, metal, wood.
-
-    Returns:
-        JSON response with material, confidence, severity, masks, and preprocessed image.
-    """
+    """Takes an image, runs prediction models, and returns the results."""
     prediction_service = request.app.state.prediction_service
 
     img_bytes = await file.read()
@@ -59,5 +48,5 @@ async def predict(
 
 @router.get("/")
 async def home():
-    """Health check endpoint."""
+    """Simple health check endpoint."""
     return {"message": "DegradNet API is running ✅"}

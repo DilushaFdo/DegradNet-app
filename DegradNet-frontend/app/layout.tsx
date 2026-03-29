@@ -1,12 +1,12 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+const poppins = Poppins({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800'] });
 
 export const metadata: Metadata = {
   title: 'DegradNet — AI Infrastructure Degradation Analysis',
-  description: 'Enterprise-grade AI system for detecting and analyzing infrastructure degradation in concrete, metal, and wood',
+  description: 'AI-powered structural health monitoring for detecting degradation in concrete, metal, and wood infrastructure',
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>{children}</body>
+      <body className={poppins.className}>{children}</body>
     </html>
   );
 }

@@ -18,13 +18,13 @@ export default function InteractiveXRayCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isProcessing, setIsProcessing] = useState(true);
   
-  // Refs to hold the original image data and raw mask data so we don't re-extract them
+  // keep the image pixel data here so we don't have to load it again
   const origDataRef = useRef<Uint8ClampedArray | null>(null);
   const maskDataRef = useRef<Uint8ClampedArray | null>(null);
   const widthRef = useRef<number>(0);
   const heightRef = useRef<number>(0);
 
-  // 1. Initial Load: Extract pixels
+  // step 1: load images and grab the pixel arrays
   useEffect(() => {
     if (!imageUrl || !rawMaskUrl) return;
     setIsProcessing(true);
@@ -36,7 +36,7 @@ export default function InteractiveXRayCanvas({
     const onLoad = () => {
       loadedCount++;
       if (loadedCount === 2) {
-        // Both images loaded, extract pixel data
+        // got both images, now extract pixels
         const cvs = document.createElement('canvas');
         const ctx = cvs.getContext('2d', { willReadFrequently: true });
         if (!ctx) return;
@@ -70,7 +70,7 @@ export default function InteractiveXRayCanvas({
     maskImg.src = rawMaskUrl;
   }, [imageUrl, rawMaskUrl]);
 
-  // 2. Render Loop: Blending based on threshold
+  // step 2: mix pixels and apply heatmap color if it passes the threshold
   useEffect(() => {
     if (isProcessing) return;
     const canvas = canvasRef.current;
@@ -91,11 +91,11 @@ export default function InteractiveXRayCanvas({
     const outputData = new ImageData(w, h);
     const out = outputData.data;
 
-    // Fast pixel manipulation loop
+    // go through every pixel quickly
     const threshByte = Math.floor(threshold * 255);
     
     for (let i = 0; i < origData.length; i += 4) {
-      // mask is grayscale so R=G=B. We just read the R channel
+      // black and white mask, so we only need the red value
       const prob = maskData[i];
       
       if (prob > threshByte) {
@@ -103,7 +103,7 @@ export default function InteractiveXRayCanvas({
         // Safe access just in case prob is exactly 256
         const [r, g, b] = lutColor || infernoLUT[255]; 
         
-        // Alpha blending where probability determines opacity
+        // blend original picture with the heatmap color
         const alpha = prob / 255.0;
         const invAlpha = 1.0 - alpha;
         

@@ -27,7 +27,7 @@ export default function ImageUploader({ onImageSelect, disabled }: ImageUploader
         onImageSelect(compressedFile, preview);
       } catch (err) {
         console.error('Image compression failed, using original:', err);
-        // Fallback: send original file if compression fails
+        // if optimization fails, just use the original image
         const reader = new FileReader();
         reader.onload = (e) => {
           const preview = e.target?.result as string;
@@ -97,7 +97,7 @@ export default function ImageUploader({ onImageSelect, disabled }: ImageUploader
         disabled={isDisabled}
       />
 
-      {/* Hidden input for mobile camera capture */}
+      {/* hidden button for phone camera */}
       <input
         type="file"
         id="camera-capture"
@@ -108,7 +108,7 @@ export default function ImageUploader({ onImageSelect, disabled }: ImageUploader
         disabled={isDisabled}
       />
 
-      {/* Compressing overlay */}
+      {/* loading screen while optimizing */}
       {isCompressing && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-background/80 backdrop-blur-sm">
           <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
@@ -118,12 +118,12 @@ export default function ImageUploader({ onImageSelect, disabled }: ImageUploader
       )}
 
       <div className="flex flex-col items-center gap-4">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-secondary/60 border border-border/50">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20">
           <Upload className="w-6 h-6 text-muted-foreground" />
         </div>
 
         <div>
-          <p className="text-base font-medium text-foreground/80 mb-1">
+          <p className="text-base font-semibold text-foreground/80 mb-1">
             Drop your infrastructure image here
           </p>
           <p className="text-sm text-muted-foreground">
@@ -142,7 +142,7 @@ export default function ImageUploader({ onImageSelect, disabled }: ImageUploader
           Select Image
         </Button>
 
-        {/* Mobile-only camera capture button */}
+        {/* show camera button only on phones */}
         <Button
           onClick={() => document.getElementById('camera-capture')?.click()}
           disabled={isDisabled}

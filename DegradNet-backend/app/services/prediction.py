@@ -14,12 +14,7 @@ from app.models.material_classifier import MaterialClassifier
 
 
 class PredictionService:
-    """Orchestrates the two-stage prediction pipeline.
-
-    Stage 1: Classify the material type of the input image.
-    Stage 2: Run the appropriate U-Net segmentation model to detect
-             degradation regions, if the material is supported.
-    """
+    """Class to handle the material check and segmentation steps."""
 
     # Materials that use tiling at original resolution (trained on tiles)
     _TILED_MATERIALS = {"concrete", "wood", "metal"}
@@ -42,18 +37,7 @@ class PredictionService:
         self._seg_transform = AppConfig.get_segmentation_transform()
 
     def predict(self, image: Image.Image, threshold: float = None, material_override: str = "auto") -> dict:
-        """Run the full prediction pipeline on a PIL image.
-
-        Args:
-            image: RGB PIL Image to analyze.
-            threshold: Binarization threshold for the segmentation mask.
-                       Defaults to AppConfig.DEFAULT_THRESHOLD.
-            material_override: If not "auto", skip Stage 1 classification and
-                               use this material directly.
-
-        Returns:
-            Dict with keys: material, confidence, mask, binary, severity, image.
-        """
+        """Run predictions on the uploaded image."""
         if threshold is None:
             threshold = AppConfig.DEFAULT_THRESHOLD
 
@@ -83,11 +67,7 @@ class PredictionService:
         }
 
     def _classify_material(self, image: Image.Image) -> tuple[str, float]:
-        """Classify the material type of the input image.
-
-        Returns:
-            A tuple of (material_name, confidence_score).
-        """
+        """Check what material the image is."""
         x = self._clf_transform(image).unsqueeze(0).to(self._device)
         with torch.no_grad():
             logits = self._classifier(x)
@@ -101,7 +81,7 @@ class PredictionService:
     def _segment_degradation(
         self, image: Image.Image, material: str, threshold: float
     ) -> tuple[np.ndarray, np.ndarray, float]:
-        """Dispatch to the correct inference strategy based on material type."""
+        """Check material type and run the right segmentation logic."""
 
         orig_w, orig_h = image.size
 
@@ -119,10 +99,7 @@ class PredictionService:
         return final_mask, binary, severity
 
     def _predict_resized(self, image: Image.Image, material: str) -> np.ndarray:
-        """Resize whole image to 256x256, predict, upscale mask back.
-
-        Used for materials trained on whole resized images.
-        """
+        """Resize image, run prediction, and scale back up."""
         orig_w, orig_h = image.size
         tile_size = AppConfig.SEGMENTATION_SIZE[0]
 
@@ -145,11 +122,7 @@ class PredictionService:
 
 
     def _predict_tiled(self, image: Image.Image, material: str) -> np.ndarray:
-        """Tile the image at original resolution, predict per tile, stitch smoothly.
-
-        Uses an overlapping sliding window with Hann window blending to eliminate seams.
-        Used for: concrete, wood, metal.
-        """
+        """Cut image into small tiles, predict each tile, and merge them smoothly to avoid visible seams."""
         tile_size = AppConfig.SEGMENTATION_SIZE[0]
         stride = tile_size // 2  # 50% overlap
         

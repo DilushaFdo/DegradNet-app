@@ -9,27 +9,11 @@ from PIL import Image
 
 
 class ImageUtilsService:
-    """Provides static utility methods for image-to-base64 conversion.
-
-    Used by the API routes to encode prediction outputs (masks, images)
-    for JSON responses.
-    """
+    """Helper class to convert images to base64 strings so they can be sent in the JSON response."""
 
     @staticmethod
     def mask_to_base64(mask: np.ndarray, original_img: Image.Image = None) -> str:
-        """Render a numpy mask as an alpha-blended colormapped PNG.
-
-        Uses OpenCV's INFERNO colormap at the mask's native resolution.
-        If an original image is provided, it blends the heatmap over the
-        original image using the mask probability as the alpha channel.
-
-        Args:
-            mask: 2D numpy array (float) representing the raw probability mask.
-            original_img: Optional PIL Image to blend the heatmap over.
-
-        Returns:
-            Base64-encoded PNG string of the colormap-rendered mask or blended image.
-        """
+        """Makes a colored heatmap from the prediction mask and blends it with the original image."""
         mask_clipped = np.clip(mask, 0, 1)
         mask_u8 = (mask_clipped * 255).astype(np.uint8)
         heatmap_bgr = cv2.applyColorMap(mask_u8, cv2.COLORMAP_INFERNO)
@@ -59,11 +43,7 @@ class ImageUtilsService:
 
     @staticmethod
     def probability_mask_to_base64(mask: np.ndarray) -> str:
-        """Render a raw probability mask (0-1) as a 8-bit grayscale PNG.
-        
-        This retains all probability information in a highly compressed format,
-        allowing the frontend to perform real-time thresholding and colormapping.
-        """
+        """Covert the raw mask to a grayscale image so the frontend can use it."""
         mask_u8 = (np.clip(mask, 0, 1) * 255).astype(np.uint8)
         img = Image.fromarray(mask_u8, mode="L")
         buf = BytesIO()
@@ -73,18 +53,7 @@ class ImageUtilsService:
 
     @staticmethod
     def mask_to_surface_data(mask: np.ndarray, size: int = 100) -> list:
-        """Downsample the probability mask for frontend 3D rendering.
-
-        Scales the mask to a smaller fixed size (e.g., 100x100) to keep JSON payload
-        lightweight and ensure smooth interactive 3D rendering in the browser.
-
-        Args:
-            mask: 2D numpy array (float 0-1) representing raw probability.
-            size: Target dimensions (size x size) for the returned array.
-
-        Returns:
-            A 2D list of floats representing the downsampled probability surface.
-        """
+        """Resize the mask to a smaller 100x100 array so the 3D map doesn't lag the browser."""
         # Resize using INTER_AREA for downsampling
         resized = cv2.resize(mask, (size, size), interpolation=cv2.INTER_AREA)
         # Round to 3 decimal places to reduce JSON string length
@@ -92,16 +61,7 @@ class ImageUtilsService:
 
     @staticmethod
     def binary_mask_to_base64(mask: np.ndarray) -> str:
-        """Render a binary mask as a grayscale PNG and return as base64.
-
-        White pixels represent detected defect areas, black pixels are clean.
-
-        Args:
-            mask: 2D numpy array (0/1 uint8) representing the binary mask.
-
-        Returns:
-            Base64-encoded PNG string of the grayscale mask.
-        """
+        """Convert the black and white output mask into a base64 string."""
         img = Image.fromarray((mask * 255).astype(np.uint8), mode="L")
         buf = BytesIO()
         img.save(buf, format="PNG")
@@ -110,14 +70,7 @@ class ImageUtilsService:
 
     @staticmethod
     def image_to_base64(image: Image.Image) -> str:
-        """Convert a PIL Image to a base64-encoded PNG string.
-
-        Args:
-            image: PIL Image to encode.
-
-        Returns:
-            Base64-encoded PNG string.
-        """
+        """Convert normal image to a base64 string."""
         buf = BytesIO()
         image.save(buf, format="PNG")
         buf.seek(0)

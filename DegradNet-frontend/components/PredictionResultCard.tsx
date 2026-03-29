@@ -5,7 +5,7 @@ import { PredictionResult } from '@/types';
 import ConfidenceBar from './ConfidenceBar';
 import SeverityBar from './SeverityBar';
 import ImageMaskCanvas from './ImageMaskCanvas';
-import { CheckCircle, Box } from 'lucide-react';
+import { CheckCircle, Wrench } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TopographicMap from './TopographicMap';
@@ -24,7 +24,7 @@ export default function PredictionResultCard({
 }: PredictionResultCardProps) {
   return (
     <div className="space-y-4">
-      {/* Detection Summary Card */}
+      {/* main results card */}
       <Card className="border-border/50">
         <CardContent className="p-5 space-y-5">
           {/* Status Badge */}
@@ -35,11 +35,11 @@ export default function PredictionResultCard({
             </span>
           </div>
 
-          {/* Material Type */}
+          {/* material type section */}
           <div className="p-4 rounded-lg bg-secondary/40 border border-border/30">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 border border-primary/20">
-                <Box className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 border border-accent/20">
+                <Wrench className="w-5 h-5 text-accent" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-0.5">
@@ -60,7 +60,7 @@ export default function PredictionResultCard({
         </CardContent>
       </Card>
 
-      {/* Visual Analysis Card */}
+      {/* showing the x-ray canvas */}
       <Card className="border-border/50">
         <CardContent className="p-5">
           <Tabs defaultValue="2d" className="w-full">

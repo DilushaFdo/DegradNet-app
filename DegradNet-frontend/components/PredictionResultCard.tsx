@@ -64,9 +64,9 @@ export default function PredictionResultCard({
       <Card className="border-border/50">
         <CardContent className="p-5">
           <Tabs defaultValue="2d" className="w-full">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <h3 className="text-sm font-medium text-foreground/80">Analysis Visualization</h3>
-              <TabsList className="bg-secondary/50">
+              <TabsList className="bg-secondary/50 w-full sm:w-auto grid grid-cols-2 sm:flex">
                 <TabsTrigger value="2d" className="text-xs">2D X-Ray Overlay</TabsTrigger>
                 <TabsTrigger value="3d" className="text-xs focus:outline-none">3D Topographic</TabsTrigger>
               </TabsList>

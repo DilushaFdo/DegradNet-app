@@ -41,11 +41,15 @@ export default function TopographicMap({
             showscale: true,
             colorbar: {
               title: { 
-                text: 'Severity / Prob', 
+                text: 'Severity', 
                 side: 'right',
-                font: { color: 'rgba(255,255,255,0.9)' }
+                font: { color: 'rgba(255,255,255,0.9)', size: 10 }
               },
-              tickfont: { color: 'rgba(255,255,255,0.7)' },
+              tickfont: { color: 'rgba(255,255,255,0.7)', size: 10 },
+              thickness: 10,
+              len: 0.6,
+              x: 0.95,
+              y: 0.5,
             },
             contours: {
               z: {
